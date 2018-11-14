@@ -1,0 +1,79 @@
+CREATE TABLE User (
+    User_ID INT NOT NULL AUTO_INCREMENT,
+	Email varchar(255) NOT NULL UNIQUE,		
+    Username varchar(255) NOT NULL UNIQUE,
+    First_Name varchar(255) NOT NULL,
+    Second_Name varchar(255) NOT NULL,     
+    PRIMARY KEY (User_ID) 
+);
+
+
+CREATE TABLE Galaxy (
+    Galaxy_ID INT NOT NULL AUTO_INCREMENT,
+    Image_Link varchar(600) NOT NULL,
+    Distance DECIMAL NOT NULL,
+    Right_Ascension DECIMAL NOT NULL CHECK (Right_Ascension >= 0 AND Right_Ascension <= 360),
+    Declination DECIMAL NOT NULL CHECK (Declination >= -90 AND Declination <= 90),
+    Capture_Date DATE,
+    Capture_Time TIME,
+    PRIMARY KEY (Galaxy_ID)
+); 
+
+
+CREATE TABLE Classification (
+    Classification_ID INT NOT NULL AUTO_INCREMENT,
+    Galaxy_ID INT NOT NULL UNIQUE,
+    User_ID INT NOT NULL,
+    PRIMARY KEY (Classification_ID),
+    FOREIGN KEY (Galaxy_ID) REFERENCES Galaxy (Galaxy_ID),
+    FOREIGN KEY (User_ID) REFERENCES User (User_ID)
+); 
+
+CREATE TABLE ClassificationType (
+	Type_ID INT NOT NULL AUTO_INCREMENT,
+	Classification_ID INT NOT NULL,
+	Type VARCHAR(50) NOT NULL CHECK (Type IN ('star','smoothElipsoid','disk','other')),
+	PRIMARY KEY (Type_ID),
+	FOREIGN KEY (Classification_ID) REFERENCES Classification (Classification_ID)
+);
+
+CREATE TABLE Oddity (
+	Oddity_ID INT NOT NULL AUTO_INCREMENT,
+	Classification_ID INT NOT NULL,
+	PRIMARY KEY (Oddity_ID),
+	FOREIGN KEY (Classification_ID) REFERENCES Classification (Classification_ID)
+);
+
+CREATE TABLE OddityType (
+	Type_ID INT NOT NULL AUTO_INCREMENT,
+	Oddity_ID INT NOT NULL,
+	Type VARCHAR(50) NOT NULL CHECK (Type IN ('merger', 'dustLane', 'nova', 'spiralArms')),
+	PRIMARY KEY (Type_ID),
+	FOREIGN KEY (Oddity_ID) REFERENCES Oddity (Oddity_ID)
+);
+
+CREATE TABLE Forum (
+	Forum_ID INT NOT NULL AUTO_INCREMENT,
+	Title VARCHAR(50) NOT NULL UNIQUE,
+	PRIMARY KEY (Forum_ID)
+);
+
+CREATE TABLE Thread (
+	Thread_ID INT NOT NULL AUTO_INCREMENT,
+	Forum_ID INT NOT NULL,
+	User_ID INT NOT NULL,
+	PRIMARY KEY (Thread_ID),
+	FOREIGN KEY (Forum_ID) REFERENCES Forum (Forum_ID),
+	FOREIGN KEY (User_ID) REFERENCES User (User_ID)
+);
+
+CREATE TABLE Reply (
+	Reply_ID INT NOT NULL AUTO_INCREMENT,
+	Thread_ID INT NOT NULL,
+	User_ID INT NOT NULL,
+	Image_Link VARCHAR(600),
+	Reply_Text TEXT,
+	PRIMARY KEY (Reply_ID),
+	FOREIGN KEY (Thread_ID) REFERENCES Thread (Thread_ID),
+	FOREIGN KEY (User_ID) REFERENCES User (User_ID)
+);
